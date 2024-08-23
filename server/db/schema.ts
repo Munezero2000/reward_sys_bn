@@ -1,4 +1,4 @@
-import { integer, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const reward = pgTable("Rewards", {
   id: text("Id")
@@ -7,8 +7,10 @@ export const reward = pgTable("Rewards", {
   name: text("Name").notNull(),
   description: text("Description").notNull(),
   requiredPoints: integer("RequiredPoints").notNull(),
-  images: jsonb("Images").notNull(),
-  quantity: integer("Quantity").$default(() => 0),
+  image: text("Images").notNull(),
+  quantity: integer("Quantity")
+    .$default(() => 0)
+    .notNull(),
   createdOn: timestamp("CreatedOn").defaultNow(),
   updatedOn: timestamp("UpdatedOn").defaultNow(),
 });

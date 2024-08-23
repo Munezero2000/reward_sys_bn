@@ -1,0 +1,76 @@
+{
+  "id": "0fa4200e-5325-47df-aa07-e58e0c53fcb0",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Rewards": {
+      "name": "Rewards",
+      "schema": "",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "Name": {
+          "name": "Name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Description": {
+          "name": "Description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "RequiredPoints": {
+          "name": "RequiredPoints",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Images": {
+          "name": "Images",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Quantity": {
+          "name": "Quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "CreatedOn": {
+          "name": "CreatedOn",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "UpdatedOn": {
+          "name": "UpdatedOn",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
