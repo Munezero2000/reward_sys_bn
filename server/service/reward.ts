@@ -1,6 +1,6 @@
 import { sql, eq } from "drizzle-orm";
-import { db } from "../server/db/drizzle";
-import { reward } from "../server/db/schema";
+import { db } from "../db/drizzle";
+import { reward } from "../db/schema";
 
 interface RewardInput {
   name: string;
