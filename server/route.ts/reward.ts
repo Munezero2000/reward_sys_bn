@@ -8,6 +8,12 @@ const reward = new Hono();
 
 // route for getting all rewards
 reward.get("/", async (c) => {
+  const user = c.get("authUser");
+  console.log(user);
+  if (!user) {
+    return c.text("not authorized");
+  }
+
   const page = c.req.query("page") ? parseInt(c.req.query("page")!) : 1;
   const pageSize = c.req.query("pageSize") ? parseInt(c.req.query("pageSize")!) : 10;
 
