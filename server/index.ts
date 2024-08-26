@@ -6,6 +6,7 @@ import { authHandler, initAuthConfig, verifyAuth, type AuthConfig } from "@hono/
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import Google from "@auth/core/providers/google";
 import { db } from "./db/drizzle";
+import transaction from "./route.ts/transaction";
 
 export const runtime = "edge";
 
@@ -23,7 +24,6 @@ app.use(async (_c, next) => {
 });
 
 function getAuthConfig(c: Context): AuthConfig {
-  console.log(process.env.AUTH_GOOGLE_ID);
   return {
     secret: c.env.AUTH_SECRET,
     adapter: DrizzleAdapter(db),
@@ -31,6 +31,11 @@ function getAuthConfig(c: Context): AuthConfig {
       strategy: "jwt",
     },
     providers: [Google({ clientId: process.env.AUTH_GOOGLE_ID, clientSecret: process.env.AUTH_GOOGLE_SECRET })],
+    callbacks: {
+      async jwt({ user, token }) {
+        return token;
+      },
+    },
   };
 }
 
@@ -38,7 +43,7 @@ app.use("*", initAuthConfig(getAuthConfig));
 
 app.use("/auth/*", authHandler());
 
-app.use("/*", verifyAuth());
+app.use("/v1/*", verifyAuth());
 
 app.get("/protected", (c) => {
   const app = c.get("authUser");
@@ -48,5 +53,6 @@ app.get("/protected", (c) => {
 
 // Endpoints
 app.route("/rewards", reward);
+app.route("/transactions", transaction);
 
 export default app;

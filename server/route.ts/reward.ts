@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { RewardSchema } from "../util/types";
-import { createReward, deleteReward, getAllRewards, getRewardById } from "@/server/service/reward";
+import { createReward, deleteReward, getAllRewards, getRewardById } from "@/server/service/rewardServices";
 import { uploadImageToCloudinary } from "../util";
 
 const reward = new Hono();

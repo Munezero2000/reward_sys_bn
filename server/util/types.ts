@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 export const RewardSchema = z.object({
   name: z
