@@ -1,12 +1,12 @@
 import { Hono, Context } from "hono";
 import { logger } from "hono/logger";
-import reward from "./route.ts/reward";
+import reward from "./routes/reward";
 import { v2 as cloudinary } from "cloudinary";
 import { authHandler, initAuthConfig, verifyAuth, type AuthConfig } from "@hono/auth-js";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import Google from "@auth/core/providers/google";
 import { db } from "./db/drizzle";
-import transaction from "./route.ts/transaction";
+import transaction from "./routes/transaction";
 
 export const runtime = "edge";
 
