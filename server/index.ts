@@ -1,18 +1,29 @@
-import { Hono, Context } from "hono";
+import { Hono } from "hono";
 import { logger } from "hono/logger";
-import reward from "./routes/reward";
+import reward from "./routes/rewardRoutes";
 import { v2 as cloudinary } from "cloudinary";
-import { authHandler, initAuthConfig, verifyAuth, type AuthConfig } from "@hono/auth-js";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import Google from "@auth/core/providers/google";
-import { db } from "./db/drizzle";
-import transaction from "./routes/transaction";
+import { authHandler, initAuthConfig, verifyAuth } from "@hono/auth-js";
+import transaction from "./routes/transactionRoutes";
+import user from "./routes/userRoutes";
+import { getAuthConfig } from "./util/auth";
+import { cors } from "hono/cors";
 
 export const runtime = "edge";
 
 const app = new Hono().basePath("/api");
 
 app.use(logger());
+app.use(
+  "*",
+  cors({
+    origin: ["http://localhost:3001", "http://localhost:3000"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
+    maxAge: 600,
+    credentials: true,
+  })
+);
 
 app.use(async (_c, next) => {
   cloudinary.config({
@@ -23,36 +34,15 @@ app.use(async (_c, next) => {
   await next();
 });
 
-function getAuthConfig(c: Context): AuthConfig {
-  return {
-    secret: c.env.AUTH_SECRET,
-    adapter: DrizzleAdapter(db),
-    session: {
-      strategy: "jwt",
-    },
-    providers: [Google({ clientId: process.env.AUTH_GOOGLE_ID, clientSecret: process.env.AUTH_GOOGLE_SECRET })],
-    callbacks: {
-      async jwt({ user, token }) {
-        return token;
-      },
-    },
-  };
-}
-
 app.use("*", initAuthConfig(getAuthConfig));
 
 app.use("/auth/*", authHandler());
 
 app.use("/v1/*", verifyAuth());
 
-app.get("/protected", (c) => {
-  const app = c.get("authUser");
-  console.log(app.user);
-  return c.json(app);
-});
-
 // Endpoints
 app.route("/rewards", reward);
 app.route("/transactions", transaction);
+app.route("/users", user);
 
 export default app;
