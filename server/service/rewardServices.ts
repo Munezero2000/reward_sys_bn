@@ -1,4 +1,4 @@
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, gt } from "drizzle-orm";
 import { db } from "../db/drizzle";
 import { reward } from "../db/schema";
 
@@ -14,7 +14,7 @@ export async function getAllRewards(page: number = 1, pageSize: number = 10) {
   try {
     const offset = (page - 1) * pageSize;
 
-    const rewards = await db.select().from(reward).limit(pageSize).offset(offset);
+    const rewards = await db.select().from(reward).where(gt(reward.quantity, 0)).limit(pageSize).offset(offset);
 
     const totalCount = await db.select({ count: sql`count(*)` }).from(reward);
 

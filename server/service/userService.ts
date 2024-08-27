@@ -1,7 +1,7 @@
 import { User } from "@auth/core/types";
 import { users } from "../db/schema";
 import { db } from "../db/drizzle";
-import { asc, desc } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
 export async function getTopUsers(): Promise<User[]> {
   try {
