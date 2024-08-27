@@ -1,15 +1,13 @@
 import { Hono } from "hono";
 import { addTransaction, getTransactions } from "../service/transactionServices";
+import { createTransactionSchema } from "../util/types";
+import { zValidator } from "@hono/zod-validator";
 
 const transaction = new Hono();
 
-transaction.post("/", async (c) => {
+transaction.post("/", zValidator("json", createTransactionSchema), async (c) => {
   try {
-    const { userId, rewardId } = await c.req.json();
-
-    if (!userId || !rewardId === undefined) {
-      return c.json({ error: "Missing required fields" }, 400);
-    }
+    const { userId, rewardId } = c.req.valid("json");
 
     try {
       await addTransaction({ userId, rewardId });

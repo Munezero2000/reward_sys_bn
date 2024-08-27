@@ -1,17 +1,20 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { RewardSchema } from "../util/types";
-import { createReward, deleteReward, getAllRewards, getRewardById } from "@/server/service/rewardServices";
-import { uploadImageToCloudinary } from "../util";
+import { GetRewardsQuerySchema, RewardSchema, UpdateRewardSchema } from "../util/types";
+import {
+  createReward,
+  deleteReward,
+  getAllRewards,
+  getRewardById,
+  updateReward,
+} from "@/server/service/rewardServices";
 
 const reward = new Hono();
 
 // route for getting all rewards
-reward.get("/", async (c) => {
-  const page = c.req.query("page") ? parseInt(c.req.query("page")!) : 1;
-  const pageSize = c.req.query("pageSize") ? parseInt(c.req.query("pageSize")!) : 10;
-
+reward.get("/", zValidator("query", GetRewardsQuerySchema), async (c) => {
   try {
+    const { page, pageSize } = c.req.valid("query");
     const result = await getAllRewards(page, pageSize);
     return c.json(result);
   } catch (error) {
@@ -39,17 +42,9 @@ reward.post(
   }),
   async (c) => {
     try {
-      const body = await c.req.parseBody();
-      const rewardImage = body["image"] as File;
-      const description = body["description"] as string;
-      const name = body["name"] as string;
-      const quantity = parseInt(body["quantity"] as string, 10);
-      const requiredPoints = parseInt(body["requiredPoints"] as string, 10);
+      const rewardInput = c.req.valid("form");
 
-      // Upload image
-      const imageUrl = await uploadImageToCloudinary(rewardImage);
-
-      const reward = await createReward({ name, description, image: imageUrl, quantity, requiredPoints });
+      const reward = await createReward(rewardInput);
 
       return c.json(
         {
@@ -65,41 +60,40 @@ reward.post(
   }
 );
 
-reward.put("/:id", async (c) => {
-  try {
-    const { id } = c.req.param();
-    let imageUrl: string;
-
-    // checking  for reward existance
-    const returnedReward = await getRewardById(id);
-
-    if (!returnedReward) {
-      return c.json({
-        message: "Reward not found",
-      });
+reward.put(
+  "/:id",
+  zValidator("form", UpdateRewardSchema, (result, c) => {
+    if (!result.success) {
+      return c.json({ errors: result.error.format() }, 400);
     }
+  }),
+  async (c) => {
+    try {
+      const { id } = c.req.param();
 
-    const body = await c.req.parseBody();
-    const rewardImage = body["image"] as File;
-    const description = (body["description"] as string) || returnedReward.description;
-    const name = (body["name"] as string) || returnedReward.name;
-    const quantity = parseInt(body["quantity"] as string, 10) || returnedReward.quantity;
-    const requiredPoints = parseInt(body["requiredPoints"] as string, 10) || returnedReward.requiredPoints;
+      // checking  for reward existance
+      const returnedReward = await getRewardById(id);
 
-    // checking if the image is present and reassigning new otherwise keep existing one
-    rewardImage ? (imageUrl = await uploadImageToCloudinary(rewardImage)) : (imageUrl = returnedReward.image);
+      if (!returnedReward) {
+        return c.json({
+          message: "Reward not found",
+        });
+      }
 
-    const reward = await createReward({ name, description, image: imageUrl, quantity, requiredPoints });
+      const rewardInput = c.req.valid("form");
 
-    return c.json({
-      message: "Reward details updated successfully",
-      data: reward,
-    });
-  } catch (error) {
-    console.log(error);
-    return c.json({ message: "Internal server Error" }, 500);
+      const reward = await updateReward(id, rewardInput);
+
+      return c.json({
+        message: "Reward details updated successfully",
+        data: reward,
+      });
+    } catch (error) {
+      console.log(error);
+      return c.json({ message: "Internal server Error" }, 500);
+    }
   }
-});
+);
 
 reward.delete("/:id", async (c) => {
   const { id } = c.req.param();

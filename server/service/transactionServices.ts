@@ -2,14 +2,6 @@ import { db } from "../db/drizzle";
 import { reward, transactions, users } from "../db/schema";
 import { eq } from "drizzle-orm";
 
-interface Transaction {
-  userId: string;
-  rewardId: string;
-  pointUsed: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export const addTransaction = async ({ userId, rewardId }: { userId: string; rewardId: string }) => {
   try {
     return await db.transaction(async (tx) => {

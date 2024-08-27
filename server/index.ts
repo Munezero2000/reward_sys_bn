@@ -16,7 +16,7 @@ app.use(logger());
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:3001", "http://localhost:3000"],
+    origin: [process.env.FRONT_END_URL!],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
