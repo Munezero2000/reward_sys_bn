@@ -20,7 +20,7 @@ transaction.post("/", zValidator("json", createTransactionSchema), async (c) => 
           return c.json({ error: "This reward is currently out of stock" }, 400);
         }
       }
-      throw error; // Re-throw if it's not one of the expected errors
+      throw error;
     }
   } catch (error) {
     console.error("Error processing transaction:", error);

@@ -1,6 +1,6 @@
 import { db } from "../db/drizzle";
-import { reward, transactions, users } from "../db/schema";
 import { eq } from "drizzle-orm";
+import { users, reward, transactions } from "../db/schema";
 
 export const addTransaction = async ({ userId, rewardId }: { userId: string; rewardId: string }) => {
   try {
