@@ -11,6 +11,17 @@ export function getAuthConfig(c: Context): AuthConfig {
     session: {
       strategy: "jwt",
     },
+    pages: {
+      signIn: "http://localhost:3001/rewards",
+    },
+    cookies: {
+      sessionToken: {
+        options: {
+          sameSite: "none",
+        },
+      },
+    },
+    // basePath: "/api/auth/",
     providers: [Google({ clientId: process.env.AUTH_GOOGLE_ID, clientSecret: process.env.AUTH_GOOGLE_SECRET })],
   };
 }

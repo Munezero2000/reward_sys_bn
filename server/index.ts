@@ -16,10 +16,10 @@ app.use(logger());
 app.use(
   "*",
   cors({
-    origin: [process.env.FRONT_END_URL!],
+    origin: (origin) => origin,
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
-    exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
+    allowHeaders: ["Content-Type", "x-auth-return-redirect", "Authorization"],
+    exposeHeaders: ["Content-Length"],
     maxAge: 600,
     credentials: true,
   })
@@ -38,7 +38,7 @@ app.use("*", initAuthConfig(getAuthConfig));
 
 app.use("/auth/*", authHandler());
 
-app.use("/v1/*", verifyAuth());
+app.use("/*", verifyAuth());
 
 // Endpoints
 app.route("/rewards", reward);
