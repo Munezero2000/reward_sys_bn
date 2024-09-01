@@ -34,6 +34,11 @@ export const RewardSchema = z.object({
   ),
 });
 
+export const signInSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(5, { message: "Password must be at least 5 characters long" }),
+});
+
 export const UpdateRewardSchema = z.object({
   name: z
     .string()
@@ -74,6 +79,16 @@ export const UpdateRewardSchema = z.object({
 export const GetRewardsQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   pageSize: z.coerce.number().int().positive().default(10),
+});
+
+export const createUserSchema = z.object({
+  name: z.string().max(100, { message: "Name cannot exceed 100 characters" }),
+  email: z.string().email({ message: "Invalid email address" }).max(255),
+  password: z.string().min(5, { message: "Password must be at least 5 characters long" }),
+  emailVerified: z.date().nullable().optional(),
+  earnedPoints: z.number().int().nonnegative().default(1000).optional(),
+  role: z.enum(["user", "admin"]).default("user"),
+  Image: z.string().url({ message: "Invalid image URL" }).optional(),
 });
 
 export const createTransactionSchema = z.object({
